@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="1600" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs id="hdl21-schematic-defs">
+    <text id="hdl21-schematic-circuit">{
+      "name": "nand2",
+      "prelude": "import hdl21 as h\nfrom hdl21.primitives import *\nfrom hdl21.prefix import *",
+      "signals": [
+        {"name": "a", "portdir": "INPUT"},
+        {"name": "b", "portdir": "INPUT"},
+        {"name": "y", "portdir": "OUTPUT"},
+        {"name": "VDD", "portdir": "INOUT"},
+        {"name": "VSS", "portdir": "INOUT"},
+        {"name": "mid", "portdir": "INTERNAL"}
+      ],
+      "instances": [
+        {
+          "name": "p1",
+          "of": "Pmos(w=2*u, l=100*n)",
+          "conns": [
+            {"portname": "g", "signame": "a"},
+            {"portname": "d", "signame": "y"},
+            {"portname": "s", "signame": "VDD"},
+            {"portname": "b", "signame": "VDD"}
+          ]
+        },
+        {
+          "name": "p2",
+          "of": "Pmos(w=2*u, l=100*n)",
+          "conns": [
+            {"portname": "g", "signame": "b"},
+            {"portname": "d", "signame": "y"},
+            {"portname": "s", "signame": "VDD"},
+            {"portname": "b", "signame": "VDD"}
+          ]
+        },
+        {
+          "name": "n1",
+          "of": "Nmos(w=2*u, l=100*n)",
+          "conns": [
+            {"portname": "g", "signame": "a"},
+            {"portname": "d", "signame": "y"},
+            {"portname": "s", "signame": "mid"},
+            {"portname": "b", "signame": "VSS"}
+          ]
+        },
+        {
+          "name": "n2",
+          "of": "Nmos(w=2*u, l=100*n)",
+          "conns": [
+            {"portname": "g", "signame": "b"},
+            {"portname": "d", "signame": "mid"},
+            {"portname": "s", "signame": "VSS"},
+            {"portname": "b", "signame": "VSS"}
+          ]
+        }
+      ]
+    }</text>
+  </defs>
+</svg>

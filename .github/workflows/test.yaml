@@ -26,34 +26,36 @@ jobs:
           name: vsix
           path: Hdl21SchematicEditor/packages/VsCodePlugin/*.vsix
 
-  build_app:
-    name: Build App
-    strategy:
-      matrix:
-        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Enable Corepack (for Yarn)
-        run: corepack enable
-      - name: Install Dependencies
-        run: yarn
-        working-directory: Hdl21SchematicEditor/
-      - name: Make App
-        run: yarn make
-        working-directory: Hdl21SchematicEditor/packages/EditorApp/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: app-${{ matrix.os }}
-          path: |
-            Hdl21SchematicEditor/packages/EditorApp/out/*/*.app
-            Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.exe
-            Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.deb
-            Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.rpm
+  # For now, we are disabling the app build since we haven't implemented this yet.
+  #
+  # build_app:
+  #   name: Build App
+  #   strategy:
+  #     matrix:
+  #       os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #     - name: Enable Corepack (for Yarn)
+  #       run: corepack enable
+  #     - name: Install Dependencies
+  #       run: yarn
+  #       working-directory: Hdl21SchematicEditor/
+  #     - name: Make App
+  #       run: yarn make
+  #       working-directory: Hdl21SchematicEditor/packages/EditorApp/
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: app-${{ matrix.os }}
+  #         path: |
+  #           Hdl21SchematicEditor/packages/EditorApp/out/*/*.app
+  #           Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.exe
+  #           Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.deb
+  #           Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.rpm
 
   python_importer_tests:
     name: Python Importer Test Suite

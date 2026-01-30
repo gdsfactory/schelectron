@@ -2,7 +2,7 @@
 <svg width="1600" height="800" xmlns="http://www.w3.org/2000/svg">
   <defs id="hdl21-schematic-defs">
     <text id="hdl21-schematic-circuit">{
-      "name": "schematic",
+      "name": "inverter",
       "prelude": "import hdl21 as h\nfrom hdl21.primitives import *\nfrom hdl21.prefix import *",
       "signals": [
         {"name": "inp", "portdir": "INPUT"},

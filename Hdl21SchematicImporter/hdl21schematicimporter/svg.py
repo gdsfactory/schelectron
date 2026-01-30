@@ -61,7 +61,7 @@ class SvgImporter:
                 return self.import_schematic_defs(element)
 
         # Not found; error time.
-        return self.fail(f"No {SchSvgClasses.DEFS} found in {self.svg_file}")
+        return self.fail(f"No {SchSvgIds.DEFS.value} found in {self.svg_file}")
 
     def is_this_schematic_defs(self, element: Element) -> bool:
         """Boolean indication of whether `element` is the `circuit-defs` element."""

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="1600" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs id="hdl21-schematic-defs">
+    <text id="hdl21-schematic-circuit">{
+      "name": "resistor_divider",
+      "prelude": "import hdl21 as h\nfrom hdl21.primitives import *\nfrom hdl21.prefix import *\n\n@h.paramclass\nclass Params:\n    ratio: int = h.Param(dtype=int, default=2, desc='Divider ratio')",
+      "signals": [
+        {"name": "vin", "portdir": "INPUT"},
+        {"name": "vout", "portdir": "OUTPUT"},
+        {"name": "vss", "portdir": "INOUT"},
+        {"name": "vmid", "portdir": "INTERNAL"}
+      ],
+      "instances": [
+        {
+          "name": "r1",
+          "of": "IdealResistor(r=10*KILO)",
+          "conns": [
+            {"portname": "p", "signame": "vin"},
+            {"portname": "n", "signame": "vmid"}
+          ]
+        },
+        {
+          "name": "r2",
+          "of": "IdealResistor(r=10*KILO)",
+          "conns": [
+            {"portname": "p", "signame": "vmid"},
+            {"portname": "n", "signame": "vss"}
+          ]
+        }
+      ]
+    }</text>
+  </defs>
+</svg>
