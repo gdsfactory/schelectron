@@ -24,7 +24,7 @@ import {
 import { Bbox, bbox } from "./bbox";
 import { Label, LabelKind, LabelParent } from "./label";
 import { EntityKind, EntityInterface } from "./entity";
-import { symbolStyle, instacePortStyle } from "./style";
+import { symbolStyle, labelStyle, instacePortStyle, getCurrentTheme, getThemeColors } from "./style";
 import { Canvas } from "./canvas";
 import { theEditor } from "../editor";
 import { MousePos } from "../mousepos";
@@ -81,19 +81,21 @@ class Drawing {
     return new Drawing(rootGroup, symbolGroup, portGroup, labelGroup);
   }
   highlight = () => {
+    const colors = getThemeColors(getCurrentTheme());
     traverseAndApply(this.symbolGroup, (node: any) => {
-      node.stroke = "red";
+      node.stroke = colors.symbolHighlight;
     });
     traverseAndApply(this.portGroup, (node: any) => {
-      node.stroke = "red";
+      node.stroke = colors.symbolHighlight;
     });
   };
   unhighlight = () => {
+    const colors = getThemeColors(getCurrentTheme());
     traverseAndApply(this.symbolGroup, (node: any) => {
-      node.stroke = "black";
+      node.stroke = colors.symbol;
     });
     traverseAndApply(this.portGroup, (node: any) => {
-      node.stroke = "black";
+      node.stroke = colors.portStroke;
     });
   };
 }
@@ -164,7 +166,7 @@ abstract class InstancePortBase implements LabelParent, DotParent, Placeable {
     this.drawing.rootGroup.remove();
   };
   // Boolean indication of whether `mousePos` is inside the Instance's bounding box.
-  // The confusing part: despite calling "getBoundingClientRect", this uses the *canvas* coordinates(?).
+  // Uses canvas/scene coordinates to match wire hit testing behavior.
   hitTest = (mousePos: MousePos) => bbox.hitTest(this.bbox, mousePos.canvas);
   // Update the Instance's bounding box.
   updateBbox = () => {
@@ -172,7 +174,15 @@ abstract class InstancePortBase implements LabelParent, DotParent, Placeable {
     // Note this must come *after* the drawing is added to the scene.
     // And note we use the *symbol* bounding box, not the overall drawing's,
     // which might include some long text labels.
-    this.bbox = bbox.get(this.drawing.symbolGroup);
+    const screenBbox = bbox.get(this.drawing.symbolGroup);
+    // Convert screen bbox to canvas/scene coordinates
+    const { zoomScale, panOffset } = theEditor.getTransform();
+    this.bbox = {
+      left: (screenBbox.left - panOffset.x) / zoomScale,
+      right: (screenBbox.right - panOffset.x) / zoomScale,
+      top: (screenBbox.top - panOffset.y) / zoomScale,
+      bottom: (screenBbox.bottom - panOffset.y) / zoomScale,
+    };
   };
   // The `LabelParent` interface
   abstract updateLabelText: (label: Label) => void;
@@ -324,6 +334,11 @@ export class SchPort
   override createLabels = () => {
     const { portElement } = this.data;
 
+    // Skip label creation for ports with hideLabel (e.g., GND)
+    if (portElement.hideLabel) {
+      return;
+    }
+
     // Create and add the name Label
     this.nameLabel = Label.create({
       text: this.data.name,
@@ -342,7 +357,7 @@ export class SchPort
     }
   };
   // Get references to our child `Label`s.
-  labels = (): Array<Label> => [this.nameLabel!];
+  labels = (): Array<Label> => (this.nameLabel ? [this.nameLabel] : []);
 }
 
 // FIXME! fill these guys in
@@ -398,9 +413,19 @@ const radianRotation = (rotation: Rotation): number => {
 // This uses the SVG string representation of the symbol, coupled with two.js's SVG loading.
 // Ultimately it can and should be replaced with direct calls to the graphics objects.
 function svgSymbolDrawing(symbol: Symbol): Group {
-  let symbolSvgStr = "<svg>" + symbol.svgLines.join() + "</svg>";
+  let symbolSvgStr = "<svg>" + symbol.svgLines.join("") + "</svg>";
   const symbolGroup = theEditor.canvas.two.load(symbolSvgStr, doNothing);
-  traverseAndApply(symbolGroup, symbolStyle);
+  // Apply styling with special handling for text elements
+  // Text elements need noStroke() to avoid chunky/smeared appearance
+  traverseAndApply(symbolGroup, (node: any) => {
+    // Check if this is a text element by looking at the renderer type
+    // Two.js text elements have _renderer.type === "text"
+    if (node._renderer && node._renderer.type === "text") {
+      labelStyle(node);
+    } else {
+      symbolStyle(node);
+    }
+  });
   return symbolGroup;
 }
 

@@ -7,7 +7,7 @@ import { Circle } from "two.js/src/shapes/circle";
 
 // Local Imports
 import { Point } from "SchematicsCore";
-import { dotStyle } from "./style";
+import { dotStyle, getCurrentTheme, getThemeColors } from "./style";
 import { EntityKind } from "./entity";
 import { Wire } from "./wire";
 import { Instance, SchPort } from "./instance";
@@ -68,17 +68,14 @@ export class Dot {
 
   // Update styling to indicate highlighted-ness
   highlight() {
-    // FIXME: merge with styling
-    // FIXME: keep `stroke` off for text
-    // this.drawing.stroke = "red";
-    this.drawing.fill = "red";
+    const colors = getThemeColors(getCurrentTheme());
+    this.drawing.fill = colors.symbolHighlight;
     this.highlighted = true;
   }
   // Update styling to indicate the lack of highlighted-ness
   unhighlight() {
-    // FIXME: merge with styling
-    // this.drawing.stroke = "black";
-    this.drawing.fill = "black";
+    const colors = getThemeColors(getCurrentTheme());
+    this.drawing.fill = colors.dot;
     this.highlighted = false;
   }
 

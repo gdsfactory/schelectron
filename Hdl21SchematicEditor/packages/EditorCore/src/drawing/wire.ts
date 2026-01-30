@@ -13,7 +13,7 @@ import {
   calcSegments,
 } from "SchematicsCore";
 import { EntityInterface, EntityKind } from "./entity";
-import { wireStyle } from "./style";
+import { wireStyle, getCurrentTheme, getThemeColors } from "./style";
 import { Canvas } from "./canvas";
 import { MousePos } from "../mousepos";
 import { Dot, DotParent } from "./dot";
@@ -70,7 +70,8 @@ export class Wire implements EntityInterface, DotParent {
     if (!this.drawing) {
       return; // FIXME!
     }
-    this.drawing.stroke = "red";
+    const colors = getThemeColors(getCurrentTheme());
+    this.drawing.stroke = colors.symbolHighlight;
     this.highlighted = true;
   }
   // Update styling to indicate the lack of highlighted-ness
@@ -78,7 +79,8 @@ export class Wire implements EntityInterface, DotParent {
     if (!this.drawing) {
       return; // FIXME!
     }
-    this.drawing.stroke = "blue";
+    const colors = getThemeColors(getCurrentTheme());
+    this.drawing.stroke = colors.wire;
     this.highlighted = false;
   }
   // Boolean indication of whether `point` lands on the wire. i.e. on any of its segments.
@@ -98,5 +100,57 @@ export class Wire implements EntityInterface, DotParent {
   }
   removeDot(dot: Dot): void {
     this.dots.delete(dot);
+  }
+
+  // Move all wire points by the given delta
+  moveBy(deltaX: number, deltaY: number): void {
+    for (const point of this.points) {
+      point.x += deltaX;
+      point.y += deltaY;
+    }
+    // Invalidate cached segments so they're recalculated
+    this.segments = null;
+    this.draw();
+  }
+
+  // Get the centroid of the wire (average of all points)
+  getCentroid(): Point {
+    let sumX = 0;
+    let sumY = 0;
+    for (const point of this.points) {
+      sumX += point.x;
+      sumY += point.y;
+    }
+    return Point.new(sumX / this.points.length, sumY / this.points.length);
+  }
+
+  // Rotate all wire points 90° clockwise around a center point
+  rotateAround(center: Point): void {
+    for (const point of this.points) {
+      const dx = point.x - center.x;
+      const dy = point.y - center.y;
+      // Clockwise 90° rotation: (x, y) -> (y, -x) relative to center
+      point.x = center.x + dy;
+      point.y = center.y - dx;
+    }
+    this.segments = null;
+    this.draw();
+  }
+
+  // Flip all wire points around a center point
+  flipAround(center: Point, horizontal: boolean): void {
+    for (const point of this.points) {
+      if (horizontal) {
+        // Horizontal flip: reflect x coordinate around center
+        const dx = point.x - center.x;
+        point.x = center.x - dx;
+      } else {
+        // Vertical flip: reflect y coordinate around center
+        const dy = point.y - center.y;
+        point.y = center.y - dy;
+      }
+    }
+    this.segments = null;
+    this.draw();
   }
 }

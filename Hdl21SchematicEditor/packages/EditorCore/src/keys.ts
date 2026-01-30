@@ -1,11 +1,13 @@
 // # Keyboard Inputs
 // (That we care about)
 export enum Keys {
-  c = "c", // Code Prelude
+  c = "c", // Circle (symbol) / Code Prelude
   i = "i", // Instance
+  l = "l", // Line (symbol)
   p = "p", // Port
+  t = "t", // Text (symbol)
   w = "w", // Wire
-  r = "r", // Rotate
+  r = "r", // Rotate / Rectangle (symbol)
   h = "h", // Horizontal flip
   v = "v", // Vertical flip
   z = "z", // Undo / redo

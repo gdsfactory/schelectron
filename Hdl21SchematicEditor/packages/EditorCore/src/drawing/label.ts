@@ -13,6 +13,7 @@ import {
   TextOrientation,
   labelOrientation,
 } from "SchematicsCore";
+import { theEditor } from "../editor";
 import { MousePos } from "../mousepos";
 import { Bbox, bbox } from "./bbox";
 import { labelStyle } from "./style";
@@ -94,18 +95,38 @@ export class Label implements EntityInterface {
     this.data.parent.addLabelDrawing(this.drawing);
     this.updateBbox();
   }
+  // Track whether we're in edit mode (showing cursor)
+  private isEditing: boolean = false;
+
   // Update our text value
   update(text: string) {
     this.data.text = text;
-    this.drawing.value = text;
+    // Show cursor if in edit mode
+    this.drawing.value = this.isEditing ? text + "|" : text;
     this.updateBbox();
     this.data.parent.updateLabelText(this);
   }
-  updateBbox() {
-    this.bbox = bbox.get(this.drawing);
+
+  // Show or hide the editing cursor
+  showCursor(show: boolean) {
+    this.isEditing = show;
+    // Update display to show/hide cursor
+    this.drawing.value = show ? this.data.text + "|" : this.data.text;
+    this.updateBbox();
   }
-  // Boolean indication of whether `mousePos` is inside the instance.
-  // The confusing part: despite calling "getBoundingClientRect", this uses the *canvas* coordinates(?).
+  updateBbox() {
+    const screenBbox = bbox.get(this.drawing);
+    // Convert screen bbox to canvas/scene coordinates
+    const { zoomScale, panOffset } = theEditor.getTransform();
+    this.bbox = {
+      left: (screenBbox.left - panOffset.x) / zoomScale,
+      right: (screenBbox.right - panOffset.x) / zoomScale,
+      top: (screenBbox.top - panOffset.y) / zoomScale,
+      bottom: (screenBbox.bottom - panOffset.y) / zoomScale,
+    };
+  }
+  // Boolean indication of whether `mousePos` is inside the label.
+  // Uses canvas/scene coordinates to match wire hit testing behavior.
   hitTest = (mousePos: MousePos) => bbox.hitTest(this.bbox, mousePos.canvas);
   // Update styling to indicate highlighted-ness
   highlight() {
@@ -116,6 +137,11 @@ export class Label implements EntityInterface {
   unhighlight() {
     labelStyle(this.drawing, false);
     this.highlighted = false;
+  }
+  // Highlight with error styling (red) for unimplemented ports
+  highlightError() {
+    this.drawing.fill = "#f14c4c"; // Red color for errors
+    this.highlighted = true;
   }
   // Abort an in-progress instance.
   abort() {}

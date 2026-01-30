@@ -3,6 +3,8 @@
  * All the "others" that haven't been filed into modules.
  */
 
+import { Path } from "two.js/src/path";
+import { Point } from "SchematicsCore";
 import { SchEditor } from "../editor";
 import { UiModes, UiModeHandlerBase } from "./base";
 
@@ -62,4 +64,142 @@ export class EditPrelude extends UiModeHandlerBase {
 // FIXME: Experimental and not safe for work.
 export class Pan extends UiModeHandlerBase {
   mode: UiModes.Pan = UiModes.Pan;
+}
+
+// # Rectangle Selection Mode
+//
+// Allows selecting multiple entities by drawing a selection rectangle.
+// Started with shift+click, entities within the rectangle are selected on mouse up.
+//
+export class RectSelect extends UiModeHandlerBase {
+  mode: UiModes.RectSelect = UiModes.RectSelect;
+
+  // Starting point of the selection rectangle (in scene coordinates)
+  startPoint: Point;
+  // Current end point
+  endPoint: Point;
+  // The visual selection rectangle (drawn as a Path)
+  selectionRect: Path | null = null;
+
+  constructor(editor: SchEditor, startPoint: Point) {
+    super(editor);
+    this.startPoint = startPoint;
+    this.endPoint = Point.new(startPoint.x, startPoint.y);
+  }
+
+  static start(editor: SchEditor): RectSelect {
+    const startPoint = editor.uiState.mousePos.canvas;
+    const me = new RectSelect(editor, Point.new(startPoint.x, startPoint.y));
+    me.createSelectionRect();
+    return me;
+  }
+
+  // Create the visual selection rectangle
+  createSelectionRect = () => {
+    const { editor, startPoint: s, endPoint: e } = this;
+    const { two, dotLayer } = editor.canvas;
+
+    // Create rectangle as a closed path
+    this.selectionRect = two.makePath(
+      s.x, s.y,  // top-left
+      e.x, s.y,  // top-right
+      e.x, e.y,  // bottom-right
+      s.x, e.y   // bottom-left
+    );
+    this.selectionRect.closed = true;
+    this.selectionRect.stroke = "#007fd4";
+    this.selectionRect.linewidth = 1;
+    this.selectionRect.fill = "rgba(0, 127, 212, 0.15)";
+    (this.selectionRect as any).dashes = [4, 4];
+    dotLayer.add(this.selectionRect);
+  };
+
+  // Update the selection rectangle as the mouse moves
+  updateSelectionRect = () => {
+    if (this.selectionRect) {
+      this.selectionRect.remove();
+    }
+    this.createSelectionRect();
+  };
+
+  // Update the selection rectangle as the mouse moves
+  override handleMouseMove = () => {
+    const { editor } = this;
+    this.endPoint = editor.uiState.mousePos.canvas;
+    this.updateSelectionRect();
+  };
+
+  // Complete the selection on mouse up
+  override handleMouseUp = () => {
+    const { editor, startPoint, endPoint } = this;
+
+    // Calculate selection bounds
+    const minX = Math.min(startPoint.x, endPoint.x);
+    const maxX = Math.max(startPoint.x, endPoint.x);
+    const minY = Math.min(startPoint.y, endPoint.y);
+    const maxY = Math.max(startPoint.y, endPoint.y);
+
+    // Find all entities within the selection rectangle
+    this.selectEntitiesInRect(minX, minY, maxX, maxY);
+
+    // Remove the selection rectangle
+    if (this.selectionRect) {
+      this.selectionRect.remove();
+      this.selectionRect = null;
+    }
+
+    // Return to idle mode
+    editor.goUiIdle();
+  };
+
+  // Select all entities within the given rectangle
+  selectEntitiesInRect = (minX: number, minY: number, maxX: number, maxY: number) => {
+    const { editor } = this;
+    const { schematic } = editor;
+
+    // First deselect everything
+    editor.deselectAll();
+
+    // Check instances
+    for (const instance of schematic.instances) {
+      const loc = instance.data.loc;
+      if (loc.x >= minX && loc.x <= maxX && loc.y >= minY && loc.y <= maxY) {
+        editor.addToSelection(instance);
+      }
+    }
+
+    // Check ports
+    for (const port of schematic.ports) {
+      const loc = port.data.loc;
+      if (loc.x >= minX && loc.x <= maxX && loc.y >= minY && loc.y <= maxY) {
+        editor.addToSelection(port);
+      }
+    }
+
+    // Check wires - select if any point is within the selection
+    for (const wire of schematic.wires) {
+      const points = wire.points;
+      if (points.length >= 1) {
+        // Check if any point of the wire is within the selection
+        for (const point of points) {
+          if (point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY) {
+            editor.addToSelection(wire);
+            break;
+          }
+        }
+      }
+    }
+
+    // Update the toolbar to show context tools if something is selected
+    editor.goUiIdle();
+  };
+
+  // Abort: remove the selection rectangle and return to idle
+  abort = () => {
+    if (this.selectionRect) {
+      this.selectionRect.remove();
+      this.selectionRect = null;
+    }
+    this.editor.goUiIdle();
+  };
 }

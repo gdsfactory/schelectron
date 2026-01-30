@@ -17,6 +17,7 @@ import { Wire } from "./wire";
 import { Instance, SchPort } from "./instance";
 import { Dot } from "./dot";
 import { SchEditor } from "../editor";
+import { getCurrentTheme, getThemeColors } from "./style";
 
 class DotMap {
   // x as the major/ outer key
@@ -229,7 +230,7 @@ export class Schematic {
       editor,
       schData.size,
       schData.prelude,
-      [] // FIXME! otherSvgElements
+      schData.otherSvgElements || [] // Load other SVG elements
     );
 
     // Add all instances
@@ -274,7 +275,7 @@ export class Schematic {
     schData.name = ""; // FIXME
     schData.size = structuredClone(this.size);
     schData.prelude = structuredClone(this.prelude);
-    schData.otherSvgElements = []; // FIXME!
+    schData.otherSvgElements = structuredClone(this.otherSvgElements);
 
     // Save all of our primary data structures `data` elements
     this.instances.forEach((inst) => schData.instances.push(inst.data));
@@ -289,6 +290,61 @@ export class Schematic {
     this.ports.forEach((e) => e.draw());
     this.wires.forEach((e) => e.draw());
     this.dots.forEach((e) => e.draw());
+    this.drawOtherSvgElements();
+  };
+
+  // Draw custom symbol graphics stored as SVG strings
+  drawOtherSvgElements = () => {
+    if (!this.otherSvgElements || this.otherSvgElements.length === 0) {
+      return;
+    }
+
+    const { two, instanceLayer } = this.editor.canvas;
+
+    for (const svgString of this.otherSvgElements) {
+      try {
+        // Create a temporary container to parse the SVG string
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(
+          `<svg xmlns="http://www.w3.org/2000/svg">${svgString}</svg>`,
+          "image/svg+xml"
+        );
+        const svgElement = doc.querySelector("svg");
+
+        if (svgElement && svgElement.firstElementChild) {
+          const childElement = svgElement.firstElementChild as SVGElement;
+          // Use Two.js interpret to convert the SVG to Two.js shapes
+          const interpreted = two.interpret(childElement);
+          if (interpreted) {
+            // Apply theme-aware styling for symbol elements
+            const colors = getThemeColors(getCurrentTheme());
+            const isText = childElement.tagName.toLowerCase() === "text";
+
+            if (isText) {
+              // Text elements use fill for color and no stroke
+              interpreted.fill = colors.symbol;
+              interpreted.noStroke();
+              // Set text-specific properties
+              (interpreted as any).family = "Menlo, Monaco, 'Courier New', monospace";
+              (interpreted as any).size = 14;
+              (interpreted as any).weight = 400;
+              (interpreted as any).alignment = "left";
+              (interpreted as any).baseline = "top";
+            } else {
+              // Shape elements use stroke and transparent fill
+              interpreted.stroke = colors.symbol;
+              interpreted.linewidth = 2;
+              interpreted.fill = "transparent";
+              interpreted.cap = "round";
+              interpreted.join = "round";
+            }
+            instanceLayer.add(interpreted);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to draw SVG element:", svgString, e);
+      }
+    }
   };
   // Add an entity to the schematic. Largely dispatches according to the entity's kind.
   addEntity = (entity: Entity): void => {

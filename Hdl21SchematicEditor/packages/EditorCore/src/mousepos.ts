@@ -7,14 +7,19 @@ import { Point } from "SchematicsCore";
 
 // # Mouse Position
 //
-// Including page (app) and canvas coordinates.
+// Including page, screen (canvas-relative), and scene coordinates.
 //
 export interface MousePos {
   page: Point; // The page position, as reported by the browser.
-  canvas: Point; // The canvas position, as reported by the `Canvas` class.
+  screen: Point; // Canvas-relative coordinates (before zoom/pan transform). Used for hit testing with getBoundingClientRect.
+  canvas: Point; // Scene coordinates (after zoom/pan transform). Used for placing/moving entities.
 }
 export const mousepos = {
-  // Get a mouse-position at the origin of *both* coordinate systems.
-  // Note this is not necessarily a *valid* mouse-position; the two origins generally differ.
-  origin: (): MousePos => ({ page: Point.new(0, 0), canvas: Point.new(0, 0) }),
+  // Get a mouse-position at the origin of all coordinate systems.
+  // Note this is not necessarily a *valid* mouse-position; the origins generally differ.
+  origin: (): MousePos => ({
+    page: Point.new(0, 0),
+    screen: Point.new(0, 0),
+    canvas: Point.new(0, 0),
+  }),
 };

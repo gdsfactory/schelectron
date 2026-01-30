@@ -57,7 +57,15 @@ export class UiState {
   };
 
   // The currently selected entity (instance, wire, port, etc.)
+  // For single selection (backwards compatibility)
   selected_entity: Entity | null = null;
+
+  // Multiple selected entities (for rectangle selection)
+  selected_entities: Set<Entity> = new Set();
+
+  // Fixed center point for group transformations (rotation/flip).
+  // This is calculated once when a group transformation starts and cleared when selection changes.
+  groupTransformCenter: { x: number; y: number } | null = null;
 
   // Track the mouse position at all times.
   // Initializes to the center of the canvas.

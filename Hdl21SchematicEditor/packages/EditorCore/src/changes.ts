@@ -5,16 +5,18 @@
  */
 
 // Local Imports
-import { Place, exhaust } from "SchematicsCore";
-import { Label, SchPort, Instance, Entity } from "./drawing";
+import { Place, Point, exhaust } from "SchematicsCore";
+import { Label, SchPort, Instance, Entity, Wire } from "./drawing";
 
 // Enumerate Kinds of Changes
 // Each `Change` variant has a `kind` field that is one of these values.
 export enum ChangeKind {
   Add = "Add",
   Move = "Move",
+  MoveWire = "MoveWire",
   Remove = "Remove",
   EditText = "EditText",
+  Batch = "Batch", // A batch of changes that should be undone/redone together
 }
 
 export interface Add {
@@ -34,6 +36,14 @@ export interface Move {
   to: Place;
 }
 
+// Wire move: tracks the original and new point positions
+export interface MoveWire {
+  kind: ChangeKind.MoveWire;
+  wire: Wire;
+  from: Array<Point>;
+  to: Array<Point>;
+}
+
 export interface EditText {
   kind: ChangeKind.EditText;
   label: Label;
@@ -41,8 +51,14 @@ export interface EditText {
   to: string;
 }
 
+// Batch change: multiple changes that should be undone/redone as a unit
+export interface Batch {
+  kind: ChangeKind.Batch;
+  changes: Array<Change>;
+}
+
 // The primary `Change` union type
-export type Change = Add | Remove | Move | EditText;
+export type Change = Add | Remove | Move | MoveWire | EditText | Batch;
 
 // Get the inverse of a change, i.e. that which undoes it.
 export function inverse(change: Change): Change {
@@ -64,12 +80,25 @@ export function inverse(change: Change): Change {
         from: change.to,
         to: change.from,
       };
+    case ChangeKind.MoveWire:
+      return {
+        kind: ChangeKind.MoveWire,
+        wire: change.wire,
+        from: change.to,
+        to: change.from,
+      };
     case ChangeKind.EditText:
       return {
         kind: ChangeKind.EditText,
         label: change.label,
         from: change.to,
         to: change.from,
+      };
+    case ChangeKind.Batch:
+      // Inverse of a batch is a batch of inverses, in reverse order
+      return {
+        kind: ChangeKind.Batch,
+        changes: change.changes.map(inverse).reverse(),
       };
     default:
       throw exhaust(change);

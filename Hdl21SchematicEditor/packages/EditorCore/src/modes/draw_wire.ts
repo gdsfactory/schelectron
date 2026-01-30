@@ -4,6 +4,55 @@ import { ChangeKind } from "../changes";
 import { SchEditor } from "../editor";
 import { UiModes, UiModeHandlerBase } from "./base";
 
+// # Wire Ready Mode
+//
+// A "waiting" mode that activates when the wire button is clicked.
+// Waits for the user to click on the canvas before starting to draw a wire.
+//
+export class WireReady extends UiModeHandlerBase {
+  mode: UiModes.WireReady = UiModes.WireReady;
+
+  static start(editor: SchEditor): WireReady {
+    const me = new WireReady(editor);
+    me.updatePanels();
+    // Change cursor to crosshair to indicate wire drawing mode
+    editor.canvas.two.renderer.domElement.style.cursor = "crosshair";
+    return me;
+  }
+
+  updatePanels = () => {
+    const { panelProps } = this.editor.uiState;
+    this.editor.updatePanels({
+      ...panelProps,
+      controlPanel: {
+        items: [],
+      },
+    });
+  };
+
+  // On mouse down, start drawing the wire at this location
+  override handleMouseDown = () => {
+    const { editor } = this;
+    // Reset cursor
+    editor.canvas.two.renderer.domElement.style.cursor = "default";
+    // Start drawing the wire at the current mouse position
+    editor.uiState.modeHandler = DrawWire.start(editor);
+  };
+
+  // Handle Escape key to exit wire mode
+  override handleKey = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      this.abort();
+    }
+  };
+
+  abort = () => {
+    // Reset cursor and return to idle
+    this.editor.canvas.two.renderer.domElement.style.cursor = "default";
+    this.editor.goUiIdle();
+  };
+}
+
 export class DrawWire extends UiModeHandlerBase {
   mode: UiModes.DrawWire = UiModes.DrawWire;
   constructor(editor: SchEditor, public wire: Wire) {
@@ -18,6 +67,8 @@ export class DrawWire extends UiModeHandlerBase {
     editor.select(wire);
     const me = new DrawWire(editor, wire);
     me.updatePanels();
+    // Keep crosshair cursor while drawing
+    editor.canvas.two.renderer.domElement.style.cursor = "crosshair";
     return me;
   }
 
@@ -87,6 +138,9 @@ export class DrawWire extends UiModeHandlerBase {
   commitWire = () => {
     const { editor, wire } = this;
 
+    // Reset cursor
+    editor.canvas.two.renderer.domElement.style.cursor = "default";
+
     // Add the wire to the schematic.
     editor.schematic.addWire(wire);
 
@@ -105,10 +159,12 @@ export class DrawWire extends UiModeHandlerBase {
   // Add a vertex on mouse-up, i.e. the end of a click
   override handleMouseUp = () => this.addWireVertex();
   // Commit on double-clicks
-  override handleDoubleClick = () => this.commitWire();
+  override handleMouseDown = () => this.commitWire();
 
   abort = () => {
     const { editor, wire } = this;
+    // Reset cursor
+    editor.canvas.two.renderer.domElement.style.cursor = "default";
     wire.abort();
     editor.deselect();
     editor.goUiIdle();

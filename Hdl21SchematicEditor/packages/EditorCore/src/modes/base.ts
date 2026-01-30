@@ -11,11 +11,25 @@ export enum UiModes {
   Idle = "Idle",
   AddInstance = "AddInstance",
   AddPort = "AddPort",
+  InstanceReady = "InstanceReady", // Waiting for click to place instance (allows R/H/V)
+  PortReady = "PortReady", // Waiting for click to place port (allows R/H/V)
   MoveInstance = "MoveInstance",
   EditLabel = "EditLabel",
   EditPrelude = "EditPrelude",
   DrawWire = "DrawWire",
+  WireReady = "WireReady", // Waiting for first click to start wire
   Pan = "Pan",
+  RectSelect = "RectSelect", // Rectangle selection mode
+  // Symbol drawing modes
+  DrawLine = "DrawLine",
+  DrawRect = "DrawRect",
+  DrawCircle = "DrawCircle",
+  DrawText = "DrawText",
+  // Symbol drawing "ready" modes (waiting for first click)
+  LineReady = "LineReady",
+  RectReady = "RectReady",
+  CircleReady = "CircleReady",
+  TextReady = "TextReady",
 }
 
 // # Handler Base Class
@@ -42,5 +56,6 @@ export abstract class UiModeHandlerBase {
   handleMouseDown = () => {};
   handleMouseUp = () => {};
   handleDoubleClick = () => {};
+  handleContextMenu = () => {}; // Right-click handler
   handleMouseMove = () => {};
 }
