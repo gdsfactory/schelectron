@@ -1,14 +1,15 @@
 {
-  "name": "hdl21-schematics-vscode",
+  "name": "schelectron",
   "private": true,
-  "displayName": "Hdl21 Schematics VS Code Extension",
-  "description": "Hdl21 Schematics VS Code Extension",
-  "version": "0.0.1",
-  "publisher": "dan-fritchman",
+  "displayName": "schelectron",
+  "description": "A VSCode Editor for End-to-End Analog/RF IC Design",
+  "version": "0.1.0",
+  "publisher": "gdsfactory",
   "license": "MIT",
+  "icon": "icons/logo.png",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/gdsfactory/schelectron"
   },
   "engines": {
     "vscode": "^1.65.0"

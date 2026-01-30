@@ -1,6 +1,10 @@
-# schelectron
+<p align="center">
+  <img src="logo_mono.png" alt="schelectron logo" width="128" height="128">
+</p>
 
-**A VSCode Editor for End-to-End Analog/RF IC Design**
+<h1 align="center">schelectron</h1>
+
+<p align="center"><strong>A VSCode Editor for End-to-End Analog/RF IC Design</strong></p>
 
 schelectron is an open-source schematic capture and symbol design tool built as a VSCode extension. It uses an SVG-based file format that's portable, git-friendly, and viewable anywhere.
 
