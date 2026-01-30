@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
+  <!-- Top lead -->
+  <line x1="8" y1="1" x2="8" y2="4"/>
+  <!-- Circle body -->
+  <circle cx="8" cy="8" r="4"/>
+  <!-- Arrow pointing up (current direction) -->
+  <line x1="8" y1="10" x2="8" y2="6"/>
+  <polygon points="8,5.5 6.5,7.5 9.5,7.5" fill="currentColor" stroke="none"/>
+  <!-- Bottom lead -->
+  <line x1="8" y1="12" x2="8" y2="15"/>
+</svg>

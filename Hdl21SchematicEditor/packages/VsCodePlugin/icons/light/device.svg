@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="#424242" stroke-width="1.2">
+  <!-- Top lead -->
+  <line x1="8" y1="1" x2="8" y2="4"/>
+  <!-- Box body -->
+  <rect x="4" y="4" width="8" height="8" rx="1"/>
+  <!-- X inside for generic -->
+  <line x1="6" y1="6" x2="10" y2="10"/>
+  <line x1="10" y1="6" x2="6" y2="10"/>
+  <!-- Bottom lead -->
+  <line x1="8" y1="12" x2="8" y2="15"/>
+</svg>

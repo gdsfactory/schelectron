@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="#424242" stroke-width="1.2">
+  <!-- Top lead -->
+  <line x1="8" y1="1" x2="8" y2="3"/>
+  <!-- Zigzag resistor body -->
+  <polyline points="8,3 10,4 6,5.5 10,7 6,8.5 10,10 6,11.5 8,13"/>
+  <!-- Bottom lead -->
+  <line x1="8" y1="13" x2="8" y2="15"/>
+  <!-- Body/tap terminal (3rd terminal) -->
+  <line x1="10" y1="7" x2="14" y2="7"/>
+  <circle cx="14" cy="7" r="0.8" fill="#424242"/>
+</svg>

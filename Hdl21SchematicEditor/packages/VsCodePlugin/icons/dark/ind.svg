@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="#C5C5C5" stroke-width="1.2">
+  <!-- Top lead -->
+  <line x1="8" y1="1" x2="8" y2="3"/>
+  <!-- Coils (4 humps) -->
+  <path d="M8,3 Q12,4 8,5 Q4,6 8,7 Q12,8 8,9 Q4,10 8,11 Q12,12 8,13"/>
+  <!-- Bottom lead -->
+  <line x1="8" y1="13" x2="8" y2="15"/>
+</svg>

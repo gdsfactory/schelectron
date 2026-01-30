@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="#424242" stroke-width="1.2">
+  <!-- Top lead (anode) -->
+  <line x1="8" y1="1" x2="8" y2="5"/>
+  <!-- Triangle (pointing down) -->
+  <polygon points="4,5 12,5 8,11" fill="none"/>
+  <!-- Cathode bar -->
+  <line x1="4" y1="11" x2="12" y2="11"/>
+  <!-- Bottom lead (cathode) -->
+  <line x1="8" y1="11" x2="8" y2="15"/>
+</svg>

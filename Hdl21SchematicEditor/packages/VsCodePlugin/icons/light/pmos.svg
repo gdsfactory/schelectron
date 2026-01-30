@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="#424242" stroke-width="1.2">
+  <!-- Gate vertical line -->
+  <line x1="3" y1="4" x2="3" y2="12"/>
+  <!-- Gate connection with bubble (inversion) -->
+  <line x1="1" y1="8" x2="2" y2="8"/>
+  <circle cx="1.5" cy="8" r="1" fill="none"/>
+  <!-- Channel vertical line -->
+  <line x1="5" y1="4" x2="5" y2="12"/>
+  <!-- Source (top for PMOS) -->
+  <line x1="5" y1="4" x2="10" y2="4"/>
+  <line x1="10" y1="1" x2="10" y2="4"/>
+  <!-- Drain (bottom for PMOS) -->
+  <line x1="5" y1="12" x2="10" y2="12"/>
+  <line x1="10" y1="12" x2="10" y2="15"/>
+  <!-- Body/Bulk arrow pointing out -->
+  <line x1="5" y1="8" x2="10" y2="8"/>
+  <line x1="10" y1="4" x2="10" y2="8"/>
+  <polygon points="10,8 6,5.5 6,10.5" fill="#424242" stroke="none"/>
+</svg>
