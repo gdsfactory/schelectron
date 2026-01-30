@@ -6,7 +6,7 @@ hero:
   text: VSCode Editor for Analog/RF IC Design
   tagline: Open-source schematic capture with SVG-based, git-friendly file format
   image:
-    src: /logo.png
+    src: /logo.svg
     alt: schelectron
   actions:
     - theme: brand

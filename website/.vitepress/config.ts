@@ -10,11 +10,11 @@ export default defineConfig({
   ignoreDeadLinks: true,
 
   head: [
-    ['link', { rel: 'icon', href: '/logo.png' }]
+    ['link', { rel: 'icon', href: '/schelectron/logo.svg' }]
   ],
 
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
 
     nav: [
       { text: 'Guide', link: '/guide/' },

@@ -30,7 +30,7 @@
         {
           "id": "hdl21-schematics",
           "title": "HDL21 Schematics",
-          "icon": "$(circuit-board)"
+          "icon": "icons/logo_dark.svg"
         }
       ]
     },
