@@ -1,0 +1,44 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin/out/**/*.js"
+      ],
+      "preLaunchTask": "${defaultBuildTask}",
+      "sourceMaps": true
+    },
+    {
+      "name": "Run Extension (No Build)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin/out/**/*.js"
+      ],
+      "sourceMaps": true
+    },
+    {
+      "name": "Extension Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin",
+        "--extensionTestsPath=${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin/out/test/suite/index"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/Hdl21SchematicEditor/packages/VsCodePlugin/out/test/**/*.js"
+      ],
+      "preLaunchTask": "${defaultBuildTask}",
+      "sourceMaps": true
+    }
+  ]
+}
