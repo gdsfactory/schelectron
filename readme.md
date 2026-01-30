@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo_mono.png" alt="schelectron logo" width="128" height="128">
+  <img src="logo.png" alt="schelectron logo" width="128" height="128">
 </p>
 
 <h1 align="center">schelectron</h1>
