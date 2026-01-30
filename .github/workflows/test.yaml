@@ -8,18 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     name: Build VsCode Extension
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+      - name: Enable Corepack (for Yarn)
+        run: corepack enable
       - name: Install Dependencies
         run: yarn
         working-directory: Hdl21SchematicEditor/
       - name: Build & Package VsCode Extension
         run: yarn package
         working-directory: Hdl21SchematicEditor/packages/VsCodePlugin/
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: vsix
           path: Hdl21SchematicEditor/packages/VsCodePlugin/*.vsix
@@ -31,20 +33,22 @@ jobs:
         os: ["ubuntu-latest", "macos-latest", "windows-latest"]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+      - name: Enable Corepack (for Yarn)
+        run: corepack enable
       - name: Install Dependencies
         run: yarn
         working-directory: Hdl21SchematicEditor/
       - name: Make App
         run: yarn make
         working-directory: Hdl21SchematicEditor/packages/EditorApp/
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: app
+          name: app-${{ matrix.os }}
           path: |
             Hdl21SchematicEditor/packages/EditorApp/out/*/*.app
             Hdl21SchematicEditor/packages/EditorApp/out/make/*/*/*.exe
@@ -57,20 +61,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Adapted from the very helpful article at https://jacobian.org/til/github-actions-poetry/
       - name: Set up Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 1.1.12
+          version: 1.8.5
           virtualenvs-create: true
           virtualenvs-in-project: true
       - name: Install Dependencies

@@ -3,8 +3,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'schelectron',
   description: 'A VSCode Editor for End-to-End Analog/RF IC Design',
+  base: '/schelectron/',
 
-  // Ignore dead links in auto-generated TypeDoc API docs
+  // TypeDoc-generated markdown contains internal reference links that
+  // VitePress cannot resolve - this is expected behavior
   ignoreDeadLinks: true,
 
   head: [

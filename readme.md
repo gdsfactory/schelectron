@@ -6,6 +6,16 @@
 
 <p align="center"><strong>A VSCode Editor for End-to-End Analog/RF IC Design</strong></p>
 
+<p align="center">
+  <a href="https://github.com/gdsfactory/schelectron/actions/workflows/test.yaml">
+    <img src="https://github.com/gdsfactory/schelectron/actions/workflows/test.yaml/badge.svg" alt="Build">
+  </a>
+  <a href="https://github.com/gdsfactory/schelectron/actions/workflows/docs.yaml">
+    <img src="https://github.com/gdsfactory/schelectron/actions/workflows/docs.yaml/badge.svg" alt="Docs">
+  </a>
+  <img src="https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue" alt="Python">
+</p>
+
 schelectron is an open-source schematic capture and symbol design tool built as a VSCode extension. It uses an SVG-based file format that's portable, git-friendly, and viewable anywhere.
 
 _Jump to [Installation](#installation)_ | _[Development](#development)_ | _[Roadmap](#roadmap)_
