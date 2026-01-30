@@ -526,3 +526,30 @@ To dev-install the Python importer:
 - [SchematicsCore](./Hdl21SchematicEditor/packages/SchematicsCore/) - Core data model and SVG import/export.
 - [PlatformInterface](./Hdl21SchematicEditor/packages/PlatformInterface/) - Messaging abstraction between the editor and host platform.
 
+---
+
+## Contributors
+
+Thanks to these wonderful people who have contributed to this project:
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dan-fritchman"><img src="https://avatars.githubusercontent.com/u/20178855?v=4?s=100" width="100px;" alt="Dan Fritchman"/><br /><sub><b>Dan Fritchman</b></sub></a><br /><a href="https://github.com/gdsfactory/schelectron/commits?author=dan-fritchman" title="Code">💻</a> <a href="https://github.com/gdsfactory/schelectron/commits?author=dan-fritchman" title="Documentation">📖</a> <a href="#design-dan-fritchman" title="Design">🎨</a> <a href="#ideas-dan-fritchman" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-dan-fritchman" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/growly"><img src="https://avatars.githubusercontent.com/u/125257?v=4?s=100" width="100px;" alt="Arya Reais-Parsi"/><br /><sub><b>Arya Reais-Parsi</b></sub></a><br /><a href="https://github.com/gdsfactory/schelectron/commits?author=growly" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/uduse"><img src="https://avatars.githubusercontent.com/u/4717005?v=4?s=100" width="100px;" alt="Zeyi Wang"/><br /><sub><b>Zeyi Wang</b></sub></a><br /><a href="https://github.com/gdsfactory/schelectron/commits?author=uduse" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ThomasPluck"><img src="https://avatars.githubusercontent.com/u/26680070?v=4?s=100" width="100px;" alt="Thomas Pluck"/><br /><sub><b>Thomas Pluck</b></sub></a><br /><a href="https://github.com/gdsfactory/schelectron/commits?author=ThomasPluck" title="Code">💻</a> <a href="#maintenance-ThomasPluck" title="Maintenance">🚧</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
