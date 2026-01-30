@@ -292,6 +292,10 @@ function portdir(kind: PortKind): PortDir {
       return PortDir.OUTPUT;
     case PortKind.Inout:
       return PortDir.INOUT;
+    case PortKind.Gnd:
+    case PortKind.Vdd:
+      // Power/ground ports are bidirectional for connectivity purposes
+      return PortDir.INOUT;
     default:
       throw exhaust(kind); // Exhaustiveness check
   }

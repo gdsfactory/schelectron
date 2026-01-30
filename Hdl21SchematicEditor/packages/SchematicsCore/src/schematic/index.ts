@@ -16,3 +16,5 @@ export * from "./graphics";
 export * from "./schematic";
 export * from "./symbol";
 export * from "./text";
+export * from "./pdkElement";
+export * from "./customElement";

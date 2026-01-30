@@ -17,6 +17,8 @@ export enum PortKind {
   Input = "Input",
   Output = "Output",
   Inout = "Inout",
+  Gnd = "Gnd",
+  Vdd = "Vdd",
 }
 
 // # Port Symbol
@@ -39,6 +41,7 @@ export interface PortElement {
   nameloc: Point; // Location of name label
   keyboardShortcut: string; // Keyboard key for insertion in the editor
   defaultName: string; // Initial, default name when created
+  hideLabel?: boolean; // If true, don't render the name label (e.g., for GND)
 }
 
 export const PortList: Array<PortElement> = [];
@@ -105,11 +108,48 @@ export const Inout = add({
   defaultName: "io",
 });
 
+// Ground port - standard 3-line earth symbol, no visible label
+export const Gnd = add({
+  kind: PortKind.Gnd,
+  svgTag: "gnd",
+  symbol: {
+    graphics: [],
+    svgLines: [
+      `<path d="M 0 0 L 0 20" class="hdl21-symbols" />`,
+      `<path d="M -20 20 L 20 20" class="hdl21-symbols" />`,
+      `<path d="M -12 28 L 12 28" class="hdl21-symbols" />`,
+      `<path d="M -4 36 L 4 36" class="hdl21-symbols" />`,
+    ],
+  },
+  nameloc: Point.new(0, 50), // Position below symbol (not rendered due to hideLabel)
+  keyboardShortcut: "g",
+  defaultName: "VSS",
+  hideLabel: true,
+});
+
+// Power port - standard power bar symbol with editable label
+export const Vdd = add({
+  kind: PortKind.Vdd,
+  svgTag: "vdd",
+  symbol: {
+    graphics: [],
+    svgLines: [
+      `<path d="M 0 0 L 0 -20" class="hdl21-symbols" />`,
+      `<path d="M -20 -20 L 20 -20" class="hdl21-symbols" />`,
+    ],
+  },
+  nameloc: Point.new(0, -35), // Position above the power bar
+  keyboardShortcut: "v",
+  defaultName: "VDD",
+});
+
 // The collection of port symbols as a JS object
 export const portElements = {
   Input,
   Output,
   Inout,
+  Gnd,
+  Vdd,
 };
 
 // Get a `PortElement` definition by its `PortKind`.

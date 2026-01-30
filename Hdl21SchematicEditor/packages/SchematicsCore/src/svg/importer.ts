@@ -22,6 +22,9 @@ import {
   matrix,
   ElementTags,
   PortTags,
+  Element,
+  ElementKind,
+  ElementMap,
 } from "../schematic";
 
 // Type alias for the return-type of `ElementNode.children()`
@@ -30,6 +33,44 @@ type Child = ElementNode | TextNode | string;
 // Wrapper type around non-schematic ("other") SVG elements
 export interface OtherSvgElement {
   child: Child;
+}
+
+// Helper function to serialize an ElementNode back to an SVG string
+function elementToSvgString(elem: ElementNode): string {
+  const { tagName, properties, children } = elem;
+  if (!tagName) return "";
+
+  // Build the opening tag
+  let svg = `<${tagName}`;
+
+  // Add properties/attributes
+  if (properties) {
+    for (const [key, value] of Object.entries(properties)) {
+      if (value !== undefined && value !== null) {
+        svg += ` ${key}="${value}"`;
+      }
+    }
+  }
+
+  // Handle self-closing tags vs tags with content
+  if (!children || children.length === 0) {
+    svg += " />";
+  } else {
+    svg += ">";
+    // Serialize children
+    for (const child of children) {
+      if (typeof child === "string") {
+        svg += child;
+      } else if (child.type === "text") {
+        svg += (child as TextNode).value || "";
+      } else {
+        svg += elementToSvgString(child as ElementNode);
+      }
+    }
+    svg += `</${tagName}>`;
+  }
+
+  return svg;
 }
 
 // # Schematic SVG Importer
@@ -190,6 +231,9 @@ export class Importer {
     }
     const { loc, orientation } = this.importTransform(transform);
 
+    // Check for custom symbol path attribute
+    const customSymbolPath = properties["data-custom-symbol-path"] as string | undefined;
+
     if (svgGroup.children.length !== 3) {
       throw this.fail(`Instance has ${svgGroup.children.length} children`);
     }
@@ -210,7 +254,14 @@ export class Importer {
       throw this.fail(`Unknown symbol type: ${classTag}`);
     }
 
-    const element = ElementTags.get(classTag);
+    // Try to get the element from the built-in elements
+    let element = ElementTags.get(classTag);
+
+    // If not found and it's a custom element, reconstruct it from the embedded SVG
+    if (!element && classTag.startsWith("custom-")) {
+      element = this.reconstructCustomElement(symbolChild, classTag, customSymbolPath);
+    }
+
     if (!element) {
       throw this.fail(`Unknown symbol type: ${classTag}`);
     }
@@ -225,6 +276,95 @@ export class Importer {
     this.schematic.instances.push(instance);
   }
 
+  // Reconstruct a custom element from embedded SVG content
+  reconstructCustomElement(symbolChild: Child, classTag: string, customSymbolPath?: string): Element | undefined {
+    const symbolElem = this.expectElement(symbolChild);
+    if (!symbolElem.children) {
+      return undefined;
+    }
+
+    // Extract SVG lines from the symbol group children
+    const svgLines: string[] = [];
+    const ports: { name: string; loc: Point }[] = [];
+
+    for (const child of symbolElem.children) {
+      if (typeof child === "string" || child.type === "text") {
+        continue;
+      }
+      const elem = child as ElementNode;
+      const { tagName, properties } = elem;
+
+      // Check if this is an instance port circle
+      if (tagName === "circle" && properties?.class === SchSvgClasses.INSTANCE_PORT) {
+        const cx = this.propToNum(properties.cx || 0);
+        const cy = this.propToNum(properties.cy || 0);
+        ports.push({ name: "", loc: Point.new(cx, cy) });
+      } else {
+        // It's part of the symbol graphics - serialize it back to SVG
+        const svgString = this.elementToSvgString(elem);
+        if (svgString) {
+          svgLines.push(svgString);
+        }
+      }
+    }
+
+    // Extract the component name from the class tag (custom-componentname -> componentname)
+    const componentName = classTag.replace("custom-", "");
+
+    // Create a custom element with the reconstructed data
+    const baseElement = ElementMap.get(ElementKind.Nmos)!;
+    const customElement: Element = {
+      kind: baseElement.kind,
+      svgTag: classTag,
+      symbol: {
+        graphics: [],
+        svgLines: svgLines,
+        ports: ports,
+      },
+      nameloc: Point.new(50, 10),
+      ofloc: Point.new(50, 30),
+      defaultNamePrefix: componentName.charAt(0).toLowerCase(),
+      defaultOf: `${componentName}()`,
+      keyboardShortcut: "",
+      customSymbolPath: customSymbolPath,
+    };
+
+    return customElement;
+  }
+
+  // Helper to serialize an ElementNode back to an SVG string (for reconstructing symbols)
+  elementToSvgString(elem: ElementNode): string {
+    const { tagName, properties, children } = elem;
+    if (!tagName) return "";
+
+    let svg = `<${tagName}`;
+    if (properties) {
+      for (const [key, value] of Object.entries(properties)) {
+        if (value !== undefined && value !== null) {
+          svg += ` ${key}="${value}"`;
+        }
+      }
+    }
+
+    if (!children || children.length === 0) {
+      svg += " />";
+    } else {
+      svg += ">";
+      for (const child of children) {
+        if (typeof child === "string") {
+          svg += child;
+        } else if (child.type === "text") {
+          svg += (child as TextNode).value || "";
+        } else {
+          svg += this.elementToSvgString(child as ElementNode);
+        }
+      }
+      svg += `</${tagName}>`;
+    }
+
+    return svg;
+  }
+
   // Import a Port
   importPort(svgGroup: ElementNode) {
     const { properties } = svgGroup;
@@ -237,11 +377,12 @@ export class Importer {
     }
     const { loc, orientation } = this.importTransform(transform);
 
-    if (svgGroup.children.length !== 2) {
+    // Ports can have 1 child (symbol only, for hideLabel ports like GND) or 2 children (symbol + name)
+    if (svgGroup.children.length < 1 || svgGroup.children.length > 2) {
       throw this.fail(`Port group has ${svgGroup.children.length} children`);
     }
 
-    // Get the two children: the symbol and port name
+    // Get the symbol child (always first)
     const [symbolChild, nameChild] = svgGroup.children;
 
     // Get the symbol type from the symbol group.
@@ -263,8 +404,8 @@ export class Importer {
     }
     const { kind } = portElement;
 
-    // Get the port name.
-    const name = this.importTextElem(nameChild);
+    // Get the port name - use default if no name child (hideLabel ports)
+    const name = nameChild ? this.importTextElem(nameChild) : portElement.defaultName;
 
     // Create the Port and add it to the schematic.
     const port = { name, kind, portElement, loc, orientation };
@@ -354,8 +495,34 @@ export class Importer {
   }
 
   // Add an element to the "other", non-schematic elements list.
+  // Converts the parsed element to an SVG string and stores it directly in the schematic,
+  // but only if it's a custom drawn graphic (has hdl21-symbols class).
   addOtherSvgElement(child: Child) {
     this.otherSvgElements.push({ child });
+
+    // Only store custom drawn graphics (path, circle, rect, etc. with hdl21-symbols class)
+    if (typeof child !== "string" && child.type === "element") {
+      const elem = child as ElementNode;
+      const { tagName, properties } = elem;
+      // Check if this is a graphics element with the hdl21-symbols class
+      if (
+        properties &&
+        properties.class === "hdl21-symbols" &&
+        (tagName === "path" ||
+          tagName === "circle" ||
+          tagName === "rect" ||
+          tagName === "ellipse" ||
+          tagName === "line" ||
+          tagName === "polyline" ||
+          tagName === "polygon" ||
+          tagName === "text")
+      ) {
+        const svgString = elementToSvgString(elem);
+        if (svgString) {
+          this.schematic.otherSvgElements.push(svgString);
+        }
+      }
+    }
   }
 
   // Get an `ElementNode` from `child`, or fail

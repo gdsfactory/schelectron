@@ -80,6 +80,13 @@ export class Exporter {
     schematic.dots.forEach((dot) => this.writeDot(dot));
     this.writeLine("\n");
 
+    // Write other SVG elements (custom drawn shapes)
+    if (schematic.otherSvgElements && schematic.otherSvgElements.length > 0) {
+      this.writeLine("<!-- Custom Symbol Graphics -->");
+      schematic.otherSvgElements.forEach((elem) => this.writeLine(elem));
+      this.writeLine("\n");
+    }
+
     // And finally add the closing tag.
     this.writeLine("</svg>");
   }
@@ -166,7 +173,12 @@ export class Exporter {
       loc: inst.loc,
       orientation: inst.orientation,
     });
-    this.writeLine(`<g class="${SchSvgClasses.INSTANCE}" ${transform} >`);
+
+    // Include custom symbol path as data attribute if present
+    const customPathAttr = element.customSymbolPath
+      ? ` data-custom-symbol-path="${element.customSymbolPath}"`
+      : "";
+    this.writeLine(`<g class="${SchSvgClasses.INSTANCE}" ${transform}${customPathAttr} >`);
 
     // Write the symbol group
     this.indent += 1;
@@ -229,14 +241,16 @@ export class Exporter {
     this.indent -= 1;
     this.writeLine(`</g>`);
 
-    // Write the port name
-    const nameLabel = {
-      text: name,
-      loc: portElement.nameloc,
-      className: SchSvgClasses.PORT_NAME,
-      orient: labelOrientation(port.orientation),
-    };
-    this.writeLabel(nameLabel);
+    // Write the port name (unless hideLabel is set)
+    if (!portElement.hideLabel) {
+      const nameLabel = {
+        text: name,
+        loc: portElement.nameloc,
+        className: SchSvgClasses.PORT_NAME,
+        orient: labelOrientation(port.orientation),
+      };
+      this.writeLabel(nameLabel);
+    }
 
     // Close the instance group
     this.indent -= 1;

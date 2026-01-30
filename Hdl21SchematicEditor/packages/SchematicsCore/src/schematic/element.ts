@@ -37,6 +37,10 @@ export interface InstancePort {
   loc: Point;
 }
 
+// Import PdkParamInfo from pdkElement to avoid circular deps at runtime
+// Re-export is handled by pdkElement.ts
+import type { PdkParamInfo } from "./pdkElement";
+
 // # Element
 //
 // The types of things which schematics can instantiate.
@@ -52,6 +56,11 @@ export interface Element {
   defaultNamePrefix: string; // Initial, default name prefix when created
   defaultOf: string; // Initial, default "of" value when created
   keyboardShortcut: string; // Keyboard key for insertion in the editor
+  // Optional PDK-specific fields
+  pdkParams?: PdkParamInfo[]; // Parameters for PDK devices (for form generation)
+  pdkDeviceName?: string; // Original PDK device name (for display without params)
+  // Optional custom symbol path (for project symbols)
+  customSymbolPath?: string; // Path to the .sym.svg file for custom symbols
 }
 
 export const ElementList: Array<Element> = [];
