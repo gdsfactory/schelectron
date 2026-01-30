@@ -18,10 +18,47 @@
   ],
   "activationEvents": [
     "onCustomEditor:hdl21.schematics",
-    "onCommand:hdl21.schematics.new"
+    "onCommand:hdl21.schematics.new",
+    "onView:hdl21.hierarchy",
+    "onView:hdl21.components"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hdl21-schematics",
+          "title": "HDL21 Schematics",
+          "icon": "$(circuit-board)"
+        }
+      ]
+    },
+    "views": {
+      "hdl21-schematics": [
+        {
+          "id": "hdl21.hierarchy",
+          "name": "Design Hierarchy",
+          "icon": "$(type-hierarchy)",
+          "contextualTitle": "Design Hierarchy"
+        },
+        {
+          "id": "hdl21.components",
+          "name": "Components",
+          "icon": "$(symbol-class)",
+          "contextualTitle": "Components"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "hdl21.hierarchy",
+        "contents": "No components found in workspace.\n\nComponents are paired .sch.svg (schematic) and .sym.svg (symbol) files.\n\n[Create New Component](command:hdl21.hierarchy.new)"
+      },
+      {
+        "view": "hdl21.components",
+        "contents": "Loading components..."
+      }
+    ],
     "customEditors": [
       {
         "viewType": "hdl21.schematics",
@@ -29,6 +66,9 @@
         "selector": [
           {
             "filenamePattern": "*.sch.svg"
+          },
+          {
+            "filenamePattern": "*.sym.svg"
           }
         ]
       }
@@ -38,8 +78,181 @@
         "command": "hdl21.schematics.new",
         "title": "Create new Hdl21 Schematic",
         "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.refresh",
+        "title": "Refresh Hierarchy",
+        "icon": "$(refresh)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.new",
+        "title": "Create New Component",
+        "icon": "$(add)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.newScript",
+        "title": "Create New Script",
+        "icon": "$(file-code)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.openScript",
+        "title": "Edit Script",
+        "icon": "$(file-code)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.createSymbolForScript",
+        "title": "Create Symbol",
+        "icon": "$(symbol-class)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.deleteScript",
+        "title": "Delete Script",
+        "icon": "$(trash)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.openSchematic",
+        "title": "Edit Schematic",
+        "icon": "$(file-code)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.openSymbol",
+        "title": "Edit Symbol",
+        "icon": "$(symbol-class)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.hierarchy.delete",
+        "title": "Delete Component",
+        "icon": "$(trash)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.components.refresh",
+        "title": "Refresh Components",
+        "icon": "$(refresh)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.pdk.install",
+        "title": "Install PDK Package",
+        "icon": "$(cloud-download)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.pdk.addDevice",
+        "title": "Add to Schematic",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.pdk.addLocalPath",
+        "title": "Add Local PDK Path",
+        "icon": "$(folder-opened)",
+        "category": "Hdl21 Schematics"
+      },
+      {
+        "command": "hdl21.symbols.addToSchematic",
+        "title": "Add to Schematic",
+        "category": "Hdl21 Schematics"
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "hdl21.hierarchy.refresh",
+          "when": "view == hdl21.hierarchy",
+          "group": "navigation"
+        },
+        {
+          "command": "hdl21.hierarchy.new",
+          "when": "view == hdl21.hierarchy",
+          "group": "navigation"
+        },
+        {
+          "command": "hdl21.hierarchy.newScript",
+          "when": "view == hdl21.hierarchy",
+          "group": "navigation"
+        },
+        {
+          "command": "hdl21.components.refresh",
+          "when": "view == hdl21.components",
+          "group": "navigation"
+        },
+        {
+          "command": "hdl21.pdk.install",
+          "when": "view == hdl21.components",
+          "group": "navigation"
+        },
+        {
+          "command": "hdl21.pdk.addLocalPath",
+          "when": "view == hdl21.components",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "hdl21.hierarchy.openSchematic",
+          "when": "view == hdl21.hierarchy && viewItem == component",
+          "group": "inline@1"
+        },
+        {
+          "command": "hdl21.hierarchy.openSymbol",
+          "when": "view == hdl21.hierarchy && viewItem == component",
+          "group": "inline@2"
+        },
+        {
+          "command": "hdl21.hierarchy.delete",
+          "when": "view == hdl21.hierarchy && viewItem == component",
+          "group": "inline@3"
+        },
+        {
+          "command": "hdl21.hierarchy.openSchematic",
+          "when": "view == hdl21.hierarchy && viewItem == childInstance",
+          "group": "inline@1"
+        },
+        {
+          "command": "hdl21.hierarchy.openSymbol",
+          "when": "view == hdl21.hierarchy && viewItem == childInstance",
+          "group": "inline@2"
+        },
+        {
+          "command": "hdl21.hierarchy.openScript",
+          "when": "view == hdl21.hierarchy && viewItem =~ /^script/",
+          "group": "inline@1"
+        },
+        {
+          "command": "hdl21.hierarchy.createSymbolForScript",
+          "when": "view == hdl21.hierarchy && viewItem == script",
+          "group": "inline@2"
+        },
+        {
+          "command": "hdl21.hierarchy.openSymbol",
+          "when": "view == hdl21.hierarchy && viewItem == scriptWithSymbol",
+          "group": "inline@2"
+        },
+        {
+          "command": "hdl21.hierarchy.deleteScript",
+          "when": "view == hdl21.hierarchy && viewItem =~ /^script/",
+          "group": "inline@3"
+        },
+        {
+          "command": "hdl21.pdk.addDevice",
+          "when": "view == hdl21.components && viewItem == device",
+          "group": "inline"
+        },
+        {
+          "command": "hdl21.symbols.addToSchematic",
+          "when": "view == hdl21.components && viewItem == projectSymbol",
+          "group": "inline"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn compile-prod",
@@ -56,6 +269,7 @@
     "@types/vscode": "^1.65.0",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
+    "css-loader": "^6.7.1",
     "eslint": "^8.13.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.1",
