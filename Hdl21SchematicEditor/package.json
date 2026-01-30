@@ -1,18 +1,8 @@
 {
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
-    "nohoist": [
-      "**/electron",
-      "**/electron/**",
-      "**/electron-squirrel-startup",
-      "**/electron-squirrel-startup/**",
-      "**/@electron-forge",
-      "**/@electron-forge/**"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "prettier": "^2.1.5"
   },

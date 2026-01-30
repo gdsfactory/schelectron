@@ -47,13 +47,9 @@ Embedding in SVG also allows for rich, arbitrary annotations and metadata, such 
 SVG is an XML-based schema and allows for semi-custom strucutre and metadata.
 This structure and metadata, detailed [later in this document](#the-svg-schematic-schema), is what makes an SVG a schematic.
 
-While _reading_ schematics just requires any old computer, _writing_ them is best done with custom software. The primary Hdl21 schematics graphical editor runs in three primary contexts:
+While _reading_ schematics just requires any old computer, _writing_ them is best done with custom software. The primary Hdl21 schematics graphical editor is a **VSCode Extension**.
 
-- As a standalone desktop application
-- As a VsCode Extension
-- Coming soon: on the web
-
-SVG schematics by convention have a sub-file-extension of `.sch.svg`. The editor application and VsCode Extension use this convention to identify schematics and automatically launch in schematic-edit mode.
+SVG schematics by convention have a sub-file-extension of `.sch.svg`. The VSCode Extension uses this convention to identify schematics and automatically launch in schematic-edit mode.
 
 ## The Element Library
 
@@ -227,10 +223,10 @@ pip install hdl21schematicimporter
 To install the Python importer from source, see the [development quickstart](#dev-quickstart).
 
 
-### Building & Installing the Schematic Editor GUI 
+### Building & Installing the VSCode Extension
 ### (from source, don't worry, we promise it's not hard)
 
-The schematic editor uses a popular web-technologies stack. It is written in [TypeScript](https://www.typescriptlang.org/) and its peripheral components use the [React](https://reactjs.org/) UI framework. The desktop app uses the cross-platform [Electron](https://www.electronjs.org/) framework. All of this is very popular, very well-supported, and very easy to get started with.
+The schematic editor uses a popular web-technologies stack. It is written in [TypeScript](https://www.typescriptlang.org/) and uses the [React](https://reactjs.org/) UI framework. All of this is very popular, very well-supported, and very easy to get started with.
 
 The schematic editor has a sole dependency: the JavaScript package manager [Yarn](https://classic.yarnpkg.com/en/docs/install).
 
@@ -239,15 +235,7 @@ The schematic editor has a sole dependency: the JavaScript package manager [Yarn
   - Install `npm` and `node` through `apt`: `sudo apt install nodejs npm`
   - Update `node` through `npm`: `sudo npm install -g n && sudo n stable`
 
-### Building the Desktop App from Source
-
-- `cd Hdl21Schematics/Hdl21SchematicEditor/packages/EditorApp`
-- `yarn` to install dependencies
-- `yarn make` to build
-
-This will produce a platform-specific app in the `out` directory.
-
-### Building the VsCode Extension from Source
+### Building the VSCode Extension from Source
 
 - `cd Hdl21SchematicEditor/packages/VsCodePlugin/`
 - `yarn` to install dependencies
@@ -255,8 +243,6 @@ This will produce a platform-specific app in the `out` directory.
 - `code --install-extension hdl21-schematics-vscode-0.0.1.vsix` to install
 
 For development-mode installations see the [development quickstart](#dev-quickstart).
-
-### Coming Soon: Installing the GUI from Pre-Packaged Bundles
 
 ---
 
@@ -516,18 +502,14 @@ One notable difference between the two: their programming language. The editor u
 
 ### Dev Quickstart
 
-To debug the desktop application:
-
-- `cd Hdl21Schematics/Hdl21SchematicEditor/packages/EditorApp`
-- `yarn` to install dependencies
-- `yarn start` to start the application
-
-To debug the VsCode Extension:
+To debug the VSCode Extension:
 
 - `cd Hdl21Schematics/Hdl21SchematicEditor/packages/VsCodePlugin/`
 - `yarn` to install dependencies
 - `yarn watch` to build the extension and watch for changes
-- `F5` to start the VsCode Extension in debug mode
+- `F5` to start the VSCode Extension in debug mode
+
+Alternatively, open the repository root in VSCode and press `F5` to launch the extension directly.
 
 To dev-install the Python importer:
 
@@ -537,12 +519,10 @@ To dev-install the Python importer:
 
 ### Editor Dev
 
-[Hdl21SchematicEditor](./Hdl21SchematicEditor/) is broken in several components, organized as JavaScript packages:
+[Hdl21SchematicEditor](./Hdl21SchematicEditor/) is organized as a TypeScript monorepo with several packages:
 
-- [EditorCore](./Hdl21SchematicEditor/packages/EditorCore/) provides the core editor functionality. This is where the overwhelming majority of the action happens.
-- [EditorApp](./Hdl21SchematicEditor/packages/EditorApp/) exposes the editor as a standalone desktop application, using the Electron framework.
-- [VsCodePlugin](./Hdl21SchematicEditor/packages/VsCodePlugin/) exposes the editor as a VS Code plug-in.
-- [PlatformInterface](./Hdl21SchematicEditor/packages/PlatformInterface/) defines the interface between `EditorCore` and its underlying "platforms", i.e. the other packages.
-- A web-based "platform" is also possible, [and is TBC](https://github.com/Vlsir/Hdl21Schematics/issues/10).
-- A command-line utility for schematic checking, exporting, schema migration, and the like is also possible, [and is TBC](https://github.com/Vlsir/Hdl21Schematics/issues/21).
+- [VsCodePlugin](./Hdl21SchematicEditor/packages/VsCodePlugin/) - The **main entry point**. VSCode extension that exposes the editor.
+- [EditorCore](./Hdl21SchematicEditor/packages/EditorCore/) - Core editor UI built with React and Two.js. This is where the drawing logic lives.
+- [SchematicsCore](./Hdl21SchematicEditor/packages/SchematicsCore/) - Core data model and SVG import/export.
+- [PlatformInterface](./Hdl21SchematicEditor/packages/PlatformInterface/) - Messaging abstraction between the editor and host platform.
 

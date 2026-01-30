@@ -1,3 +1,4 @@
+# Ignore directories for specific applications
 
-scratch
-*.log 
+/.claude
+/.obsidian
