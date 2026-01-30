@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./packages/SchematicsCore/src/index.ts",
+    "./packages/EditorCore/src/index.ts",
+    "./packages/PlatformInterface/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "../website/api/typescript",
+  "plugin": ["typedoc-plugin-markdown"],
+  "tsconfig": "./tsconfig.json",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "gitRevision": "main",
+  "name": "schelectron TypeScript API"
+}

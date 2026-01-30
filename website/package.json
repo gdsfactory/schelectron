@@ -1,0 +1,17 @@
+{
+  "name": "schelectron-docs",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "npm run build:api && vitepress build",
+    "build:api": "typedoc --options ../Hdl21SchematicEditor/typedoc.json",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.4.1"
+  }
+}

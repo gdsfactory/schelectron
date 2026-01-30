@@ -1,0 +1,76 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack (for Yarn)
+        run: corepack enable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install TypeScript dependencies
+        run: yarn
+        working-directory: Hdl21SchematicEditor/
+
+      - name: Install website dependencies
+        run: npm install
+        working-directory: website/
+
+      - name: Build TypeDoc API docs
+        run: npm run build:api
+        working-directory: website/
+
+      - name: Install Sphinx dependencies
+        run: pip install sphinx myst-parser furo hdl21 pydantic
+
+      - name: Build Sphinx docs
+        run: |
+          cd Hdl21SchematicImporter/docs
+          make html
+          mkdir -p ../../website/api/python/sphinx
+          cp -r _build/html/* ../../website/api/python/sphinx/
+
+      - name: Build VitePress site
+        run: npm run build
+        working-directory: website/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/.vitepress/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

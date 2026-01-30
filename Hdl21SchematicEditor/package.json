@@ -3,6 +3,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "resolutions": {
+    "@types/minimatch": "5.1.2"
+  },
   "devDependencies": {
     "prettier": "^2.1.5"
   },

@@ -13,7 +13,7 @@
       "name": "Dan Fritchman",
       "avatar_url": "https://avatars.githubusercontent.com/u/20178855?v=4",
       "profile": "https://github.com/dan-fritchman",
-      "contributions": ["code", "doc", "design", "ideas", "maintenance"]
+      "contributions": ["code", "doc", "design", "ideas"]
     },
     {
       "login": "growly",
@@ -34,7 +34,7 @@
       "name": "Thomas Pluck",
       "avatar_url": "https://avatars.githubusercontent.com/u/26680070?v=4",
       "profile": "https://github.com/ThomasPluck",
-      "contributions": ["code", "maintenance"]
+      "contributions": ["code", "doc", "maintenance"]
     }
   ],
   "contributorsPerLine": 7
